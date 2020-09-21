@@ -4,13 +4,13 @@ from dotenv import load_dotenv
 
 
 load_dotenv()
-books_folder = os.getenv("books_folder","/books/")
+books_folder = os.getenv("books_folder", "/books/")
 file_url = "http://tululu.org/b32168/"
 base_txt_url = "http://tululu.org/txt.php?id="
 
 
 def get_book(url):
-    res = requests.get(url,allow_redirects=False)
+    res = requests.get(url, allow_redirects=False)
     if res.status_code == 200:
         return res.text
     else:
@@ -22,7 +22,7 @@ def init():
     print(path)
     if not os.path.exists(path):
         try:
-            os.makedirs(path)    
+            os.makedirs(path)
         except Exception as e:
             print(e)
 
@@ -40,7 +40,9 @@ def main():
     for i in range(1, 10):
         try:
             data = get_book(f"{base_txt_url}{i}")
-            save_book(os.path.join(os.getcwd(), books_folder), f"id{i}.txt", data)
+            save_book(
+                os.path.join(os.getcwd(), books_folder), f"id{i}.txt", data
+            )
         except Exception as e:
             print(e)
     print("Downloading Finished")
