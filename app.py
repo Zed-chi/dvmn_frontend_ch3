@@ -2,7 +2,6 @@ import requests
 import os
 
 
-
 def get_url_content(url):
     res = requests.get(url, allow_redirects=False)
     if not res.history and res.ok:
