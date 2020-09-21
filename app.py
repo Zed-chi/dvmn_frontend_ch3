@@ -1,20 +1,14 @@
 import requests
 import os
-from dotenv import load_dotenv
 
 
-load_dotenv()
-books_folder = os.getenv("books_folder", "/books/")
-file_url = "http://tululu.org/b32168/"
-base_txt_url = "http://tululu.org/txt.php?id="
 
-
-def get_book(url):
+def get_url_content(url):
     res = requests.get(url, allow_redirects=False)
-    if res.status_code == 200:
+    if not res.history and res.ok:
         return res.text
     else:
-        raise Exception("Url is Corrupted")
+        return None
 
 
 def init():
