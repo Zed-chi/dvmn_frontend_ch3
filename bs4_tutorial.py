@@ -11,5 +11,5 @@ print(soup.prettify())
 title_tag = soup.find("main").find("header").find("h1")
 title_text = title_tag.text
 soup.find("img", class_="attachment-post-image")["src"]
-post = sopu.find("div", class_="entry-content")
+post = soup.find("div", class_="entry-content")
 text = post.text
