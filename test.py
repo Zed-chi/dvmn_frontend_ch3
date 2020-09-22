@@ -2,8 +2,10 @@ import requests
 import os
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
+import urllib
 
 
+BASE_URL = "http://tululu.org"
 BASE_BOOK_PAGE = "http://tululu.org/b"
 BOOK_URL = "http://tululu.org/txt.php?id="
 
@@ -20,8 +22,15 @@ def get_book_details(html):
         soup = BeautifulSoup(html, "lxml")
         header = soup.find("div", id="content").find("h1").text
         title, author = map(lambda x: x.strip(), header.split("::"))
-        return {"title": title, "author": author}
+        img = soup.find("div", class_="bookimage").find("img")
+        if img:
+            src = urllib.parse.urljoin("BASE_URL", img.get("src"))
+        else:
+            src = None
+        return {"title": title, "author": author, "img_url": src}
     except AttributeError as e:
+        print(e)
+    except TypeError as e:
         print(e)
 
 
@@ -65,6 +74,19 @@ def download_txt_from_tululu_by_id(id):
         print(f"{id} done")
 
 
+def get_images_from_10_books():
+    for id in range(1, 11):
+        book_details_page = f"{BASE_BOOK_PAGE}{id}"
+        html = get_url_content(book_details_page, allow_redirects=True)
+        info = get_book_details(html)
+        if info and info["img_url"] is not None:
+            try:
+                res = requests.get(info["img_url"])
+                if res.status_code == 200:
+                    print(f"Заголовок. {info['title']} \n{info['img_url']}\n")
+            except Exception as e:
+                print(e)
+
 """
 # Примеры использования
 url = "http://tululu.org/txt.php?id=1"
@@ -79,4 +101,4 @@ filepath = download_txt(url, "Али\\би", folder="txt/")
 print(filepath)  # Выведется txt/Алиби.txt
 """
 if __name__ == "__main__":
-    download_10_books()
+    get_images_from_10_books()
