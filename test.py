@@ -24,7 +24,7 @@ def get_book_details(html):
         title, author = map(lambda x: x.strip(), header.split("::"))
         img = soup.find("div", class_="bookimage").find("img")
         if img:
-            src = urllib.parse.urljoin("BASE_URL", img.get("src"))
+            src = urllib.parse.urljoin(BASE_URL, img.get("src"))
         else:
             src = None
         return {"title": title, "author": author, "img_url": src}
@@ -48,10 +48,14 @@ def get_url_content(url, allow_redirects=False):
         return None
 
 
-def save_book(path, content):
+def check_or_make_dir(path):
     dir = os.path.dirname(path)
     if not os.path.exists(dir):
         os.mkdir(dir)
+
+
+def save_book(path, content):
+    check_or_make_dir(path)
     with open(path, "w") as file:
         file.write(content)
 
@@ -81,11 +85,26 @@ def get_images_from_10_books():
         info = get_book_details(html)
         if info and info["img_url"] is not None:
             try:
+                if "nopic" in info["img_url"]:
+                    name = "nopic"
+                else:
+                    name = f"{id}"
                 res = requests.get(info["img_url"])
                 if res.status_code == 200:
                     print(f"Заголовок. {info['title']} \n{info['img_url']}\n")
+                    ext = info["img_url"].split(".")[-1]
+                    save_image(f"{name}.{ext}", res.content)
             except Exception as e:
                 print(e)
+
+
+def save_image(name, content, folder="images"):
+    filepath = os.path.join(os.getcwd(), folder, name)
+    check_or_make_dir(filepath)
+    if not os.path.exists(filepath):
+        with open(filepath, "wb") as file:
+            file.write(content)
+
 
 """
 # Примеры использования
