@@ -30,11 +30,16 @@ def get_book_details(html):
         comments = list(
             map(lambda x: x.text, soup.select(".texts span", class_="texts"))
         )
+        genres = list(
+            map(lambda x: x.text, soup.select("#content > .d_book > a"))
+        )
+
         return {
             "title": title,
             "author": author,
             "img_url": src,
             "comments": comments,
+            "genres": genres,
         }
     except AttributeError as e:
         print(e)
@@ -99,18 +104,27 @@ def get_images_from_10_books():
                     name = f"{id}"
                 res = requests.get(info["img_url"])
                 if res.status_code == 200:
-
-                    print(
-                        f"===\nЗаголовок. {info['title']} \n{info['img_url']}\n"
-                    )
-                    if info["comments"]:
-                        print("--< комментарии >---")
-                        print("\n-> ".join(info["comments"]))
-                    print("===")
+                    print_book_details(info)
                     ext = info["img_url"].split(".")[-1]
                     save_image(f"{name}.{ext}", res.content)
             except Exception as e:
                 print(e)
+
+
+def print_book_details(details):
+    print("\n==========")
+    if details["title"]:
+        print(f"=== Заголовок: {details['title']} ===")
+    if details["author"]:
+        print(f"=== Автор: {details['author']} ===")
+    if details["comments"]:
+        comments = "\n ".join(details["comments"])
+        print(f"=== Комментарии: \n{comments} ===")
+    if details["genres"]:
+        print(f"=== Жанры: {details['genres']} ===")
+    if details["img_url"]:
+        print(f"=== Ссылка: {details['img_url']} ===")
+    print("==========")
 
 
 def save_image(name, content, folder="images"):
@@ -121,18 +135,5 @@ def save_image(name, content, folder="images"):
             file.write(content)
 
 
-"""
-# Примеры использования
-url = "http://tululu.org/txt.php?id=1"
-
-filepath = download_txt(url, "Алиби")
-print(filepath)  # Выведется books/Алиби.txt
-
-filepath = download_txt(url, "Али/би", folder="books/")
-print(filepath)  # Выведется books/Алиби.txt
-
-filepath = download_txt(url, "Али\\би", folder="txt/")
-print(filepath)  # Выведется txt/Алиби.txt
-"""
 if __name__ == "__main__":
     get_images_from_10_books()
