@@ -27,7 +27,15 @@ def get_book_details(html):
             src = urllib.parse.urljoin(BASE_URL, img.get("src"))
         else:
             src = None
-        return {"title": title, "author": author, "img_url": src}
+        comments = list(
+            map(lambda x: x.text, soup.select(".texts span", class_="texts"))
+        )
+        return {
+            "title": title,
+            "author": author,
+            "img_url": src,
+            "comments": comments,
+        }
     except AttributeError as e:
         print(e)
     except TypeError as e:
@@ -91,7 +99,14 @@ def get_images_from_10_books():
                     name = f"{id}"
                 res = requests.get(info["img_url"])
                 if res.status_code == 200:
-                    print(f"Заголовок. {info['title']} \n{info['img_url']}\n")
+
+                    print(
+                        f"===\nЗаголовок. {info['title']} \n{info['img_url']}\n"
+                    )
+                    if info["comments"]:
+                        print("--< комментарии >---")
+                        print("\n-> ".join(info["comments"]))
+                    print("===")
                     ext = info["img_url"].split(".")[-1]
                     save_image(f"{name}.{ext}", res.content)
             except Exception as e:
