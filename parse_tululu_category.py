@@ -26,10 +26,10 @@ def get_all_book_links_on_page(html):
     soup = BeautifulSoup(html, "lxml")
     hrefs = soup.select(
         "div#content table.d_book tr:first-child td:first-child a"
-    )    
-    links = list(map(
-        lambda a: urllib.parse.urljoin(SFICTION_URL, a.get("href")), hrefs
-    ))    
+    )
+    links = list(
+        map(lambda a: urllib.parse.urljoin(SFICTION_URL, a.get("href")), hrefs)
+    )
     return links
 
 
@@ -39,6 +39,18 @@ def get_url_content(url):
     return res.text
 
 
+def get_books_page(id):
+    url = f"{SFICTION_URL}/{id}/"
+    return get_url_content(url)
+
+
+def get_links_from_10_pages():
+    links = []
+    for id in range(1, 11):
+        html = get_books_page(id)
+        links.extend(get_all_book_links_on_page(html))
+    return links
+
+
 if __name__ == "__main__":
-    html = get_url_content(SFICTION_URL)
-    print(get_all_book_links_on_page(html))
+    print(get_links_from_10_pages())
