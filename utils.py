@@ -1,0 +1,119 @@
+import os
+import requests
+import urllib
+import json
+import re
+from pathvalidate import sanitize_filename
+from bs4 import BeautifulSoup
+from parse_tululu_category import (
+    get_all_book_links_on_page,
+    get_sfiction_list_books_page,
+)
+
+BASE_URL = "http://tululu.org"
+
+def check_or_make_dir(path):
+    dir = os.path.dirname(path)
+    if not os.path.exists(dir):
+        os.mkdir(dir)
+
+
+def get_url_content(url, allow_redirects=False):
+    res = requests.get(url, allow_redirects=allow_redirects)
+    if res.status_code == 200:
+        return res.text
+    else:
+        return None
+
+
+def get_output_filename(filename):
+    name = sanitize_filename(filename)
+    path = os.path.normpath(name)
+    return path
+
+
+def get_id_from_book_url(link):
+    res = re.search(r"b([0-9]+)", link)
+    if res:
+        return res.group(1)
+
+
+def get_book_details(html):
+    if not html:
+        return None
+    try:
+        soup = BeautifulSoup(html, "lxml")
+        header = soup.find("div", id="content").find("h1").text
+        title, author = map(lambda x: x.strip(), header.split("::"))
+        img = soup.find("div", class_="bookimage").find("img")
+        if img:
+            src = urllib.parse.urljoin(BASE_URL, img.get("src"))
+        else:
+            src = None
+        comments = list(
+            map(lambda x: x.text, soup.select(".texts span", class_="texts"))
+        )
+        genres = list(
+            map(lambda x: x.text, soup.select("#content > .d_book > a"))
+        )
+
+        return {
+            "title": title,
+            "author": author,
+            "img_url": src,
+            "comments": comments,
+            "genres": genres,
+        }
+    except AttributeError as e:
+        print(e)
+    except TypeError as e:
+        print(e)
+
+
+def save_book(path, content):
+    check_or_make_dir(path)
+    with open(path, "w") as file:
+        file.write(content)
+
+
+def download_txt(from_="", to=""):
+    name = get_output_filename(os.path.basename(to))
+    path = os.path.join(os.path.dirname(to), name)
+    content = get_url_content(from_)
+    save_book(path, content)
+
+
+def print_book_details(details):
+    print("\n==========")
+    if details["title"]:
+        print(f"=== Заголовок: {details['title']} ===")
+    if details["author"]:
+        print(f"=== Автор: {details['author']} ===")
+    if details["comments"]:
+        comments = "\n ".join(details["comments"])
+        print(f"=== Комментарии: \n{comments} ===")
+    if details["genres"]:
+        print(f"=== Жанры: {details['genres']} ===")
+    if details["img_url"]:
+        print(f"=== Ссылка: {details['img_url']} ===")
+    print("==========")
+
+
+def save_image(name, content):    
+    check_or_make_dir(name)
+    if not os.path.exists(name):
+        with open(name, "wb") as file:
+            file.write(content)
+
+
+def download_image(from_="", to=""):
+    if not from_ or not to:
+        return None
+    content = get_url_content(from_)
+    save_image(to, content)
+
+
+def make_description(json_dict):
+    filepath = os.path.join(os.getcwd(), "books.json")
+    with open(filepath, "w") as write_file:
+        json.dump(json_dict, write_file)

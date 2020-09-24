@@ -1,9 +1,5 @@
 import requests
-
-# import os
 from bs4 import BeautifulSoup
-
-# from pathvalidate import sanitize_filename
 import urllib
 
 "#content > .d_book > tbody > tr:first-child > td:first-child a"
@@ -39,15 +35,15 @@ def get_url_content(url):
     return res.text
 
 
-def get_books_page(id):
-    url = f"{SFICTION_URL}/{id}/"
+def get_sfiction_list_books_page(id):
+    url = f"{SFICTION_URL}{id}/"
     return get_url_content(url)
 
 
 def get_links_from_10_pages():
     links = []
     for id in range(1, 11):
-        html = get_books_page(id)
+        html = get_sfiction_list_books_page(id)
         links.extend(get_all_book_links_on_page(html))
     return links
 
