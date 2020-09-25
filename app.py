@@ -67,14 +67,15 @@ def download_100_books():
             ext = info["img_url"].split(".")[-1]
             image_filename = f"{name}.{ext}"
             book_filename = f"{id}.{info['title']}.txt"
-            info["img_src"] = os.path.join(images_path, image_filename)
-            info["book_path"] = os.path.join(books_path, book_filename)
+            info["img_src"] = os.path.normcase(os.path.join(images_path, image_filename))
+            info["book_path"] = os.path.normcase(os.path.join(books_path, book_filename))
             book_id = get_id_from_book_url(link)
             txt_link = f"{BOOK_URL}{book_id}"
             download_image(from_=info["img_url"], to=info["img_src"])
             download_txt(from_=txt_link, to=info["book_path"])
-            description.append(info)
-        print(f"Book {id} saved")
+            description.append(info)        
+        break
+    print(description)
     make_description({"books": description})
 
 

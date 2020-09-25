@@ -124,4 +124,4 @@ def download_image(from_="", to=""):
 def make_description(json_dict):
     filepath = os.path.join(os.getcwd(), "books.json")
     with open(filepath, "w", encoding="utf-8") as write_file:
-        json.dump(json_dict, write_file)
+        json.dump(json_dict, write_file, indent=4,ensure_ascii = False)
