@@ -6,14 +6,10 @@ import urllib
 SFICTION_URL = "http://tululu.org/l55/"
 
 
+# (#content d_book a)
 def get_first_link(html):
     soup = BeautifulSoup(html, "lxml")
-    href = (
-        soup.find("div", id="content")
-        .find(class_="d_book")
-        .find("a")
-        .get("href")
-    )
+    href = soup.select("#content d_book a").get("href")
     link = urllib.parse.urljoin(SFICTION_URL, href)
     return link
 
