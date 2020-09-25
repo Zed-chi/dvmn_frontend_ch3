@@ -1,6 +1,6 @@
 run:
-	py test.py
+	python app.py
 
 lint:
-	black -l 79 .
-	flake8 .
+	python -m black -l 79 .
+	python -m flake8 .
