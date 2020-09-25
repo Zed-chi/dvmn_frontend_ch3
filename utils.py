@@ -5,12 +5,10 @@ import json
 import re
 from pathvalidate import sanitize_filename
 from bs4 import BeautifulSoup
-from parse_tululu_category import (
-    get_all_book_links_on_page,
-    get_sfiction_list_books_page,
-)
+
 
 BASE_URL = "http://tululu.org"
+
 
 def check_or_make_dir(path):
     dir = os.path.dirname(path)
@@ -18,7 +16,14 @@ def check_or_make_dir(path):
         os.mkdir(dir)
 
 
-def get_url_content(url, allow_redirects=False):
+def get_content_from_url(url, allow_redirects=False):
+    res = requests.get(url, allow_redirects=allow_redirects)
+    if res.status_code == 200:
+        return res.content
+    else:
+        return None
+
+def get_text_from_url(url, allow_redirects=False):
     res = requests.get(url, allow_redirects=allow_redirects)
     if res.status_code == 200:
         return res.text
@@ -70,17 +75,19 @@ def get_book_details(html):
         print(e)
 
 
-def save_book(path, content):
+def save_book(path, content):    
     check_or_make_dir(path)
-    with open(path, "w") as file:
+    with open(path, "w", encoding="utf-8") as file:
         file.write(content)
+    
 
 
 def download_txt(from_="", to=""):
     name = get_output_filename(os.path.basename(to))
     path = os.path.join(os.path.dirname(to), name)
-    content = get_url_content(from_)
-    save_book(path, content)
+    content = get_text_from_url(from_)
+    if content:        
+        save_book(path, content)
 
 
 def print_book_details(details):
@@ -99,7 +106,7 @@ def print_book_details(details):
     print("==========")
 
 
-def save_image(name, content):    
+def save_image(name, content):
     check_or_make_dir(name)
     if not os.path.exists(name):
         with open(name, "wb") as file:
@@ -109,11 +116,12 @@ def save_image(name, content):
 def download_image(from_="", to=""):
     if not from_ or not to:
         return None
-    content = get_url_content(from_)
-    save_image(to, content)
+    content = get_content_from_url(from_)
+    if content:
+        save_image(to, content)
 
 
 def make_description(json_dict):
     filepath = os.path.join(os.getcwd(), "books.json")
-    with open(filepath, "w") as write_file:
+    with open(filepath, "w", encoding="utf-8") as write_file:
         json.dump(json_dict, write_file)
