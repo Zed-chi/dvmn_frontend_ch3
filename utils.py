@@ -23,6 +23,7 @@ def get_content_from_url(url, allow_redirects=False):
     else:
         return None
 
+
 def get_text_from_url(url, allow_redirects=False):
     res = requests.get(url, allow_redirects=allow_redirects)
     if res.status_code == 200:
@@ -75,18 +76,17 @@ def get_book_details(html):
         print(e)
 
 
-def save_book(path, content):    
+def save_book(path, content):
     check_or_make_dir(path)
     with open(path, "w", encoding="utf-8") as file:
         file.write(content)
-    
 
 
 def download_txt(from_="", to=""):
     name = get_output_filename(os.path.basename(to))
     path = os.path.join(os.path.dirname(to), name)
     content = get_text_from_url(from_)
-    if content:        
+    if content:
         save_book(path, content)
 
 
@@ -124,4 +124,4 @@ def download_image(from_="", to=""):
 def make_description(json_dict):
     filepath = os.path.join(os.getcwd(), "books.json")
     with open(filepath, "w", encoding="utf-8") as write_file:
-        json.dump(json_dict, write_file, indent=4,ensure_ascii = False)
+        json.dump(json_dict, write_file, indent=4, ensure_ascii=False)
