@@ -1,7 +1,21 @@
 import requests
 import os
-from utils import *
-from parse_tululu_category import (get_all_book_links_on_page, get_sfiction_list_books_page)
+from utils import (
+    save_image,
+    print_book_details,
+    get_output_filename,
+    save_book,
+    get_text_from_url,
+    get_book_details,
+    get_id_from_book_url,
+    download_image,
+    download_txt,
+    make_description,
+)
+from parse_tululu_category import (
+    get_all_book_links_on_page,
+    get_sfiction_list_books_page,
+)
 
 
 BASE_URL = "http://tululu.org"
@@ -47,12 +61,12 @@ def get_images_from_10_books():
                 print(e)
 
 
-def download_100_books():    
+def download_100_books():
     books_path = os.path.join("./", "books")
     images_path = os.path.join("./", "images")
     links = []
     description = []
-    for id in range(1, 2):
+    for id in range(1, 5):
         html = get_sfiction_list_books_page(id)
         links.extend(get_all_book_links_on_page(html))
         print(f"Chunk {id} processed")
@@ -67,15 +81,17 @@ def download_100_books():
             ext = info["img_url"].split(".")[-1]
             image_filename = f"{name}.{ext}"
             book_filename = f"{id}.{info['title']}.txt"
-            info["img_src"] = os.path.normcase(os.path.join(images_path, image_filename))
-            info["book_path"] = os.path.normcase(os.path.join(books_path, book_filename))
+            info["img_src"] = os.path.normcase(
+                os.path.join(images_path, image_filename)
+            )
+            info["book_path"] = os.path.normcase(
+                os.path.join(books_path, book_filename)
+            )
             book_id = get_id_from_book_url(link)
             txt_link = f"{BOOK_URL}{book_id}"
             download_image(from_=info["img_url"], to=info["img_src"])
             download_txt(from_=txt_link, to=info["book_path"])
             description.append(info)        
-        break
-    print(description)
     make_description({"books": description})
 
 
