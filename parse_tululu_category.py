@@ -38,5 +38,22 @@ def get_links_from_10_pages():
     return links
 
 
+def get_links_from_pages(start, end=None):
+    links = []
+    if end:
+        for page_num in range(start, end):
+            html = get_sfiction_list_books_page(page_num)
+            links.extend(get_all_book_links_on_page(html))
+    else:
+        page_num = start
+        while True:
+            html = get_sfiction_list_books_page(page_num)
+            if not html:
+                break
+            links.extend(get_all_book_links_on_page(html))
+            page_num += 1
+    return links
+
+
 if __name__ == "__main__":
     print(get_links_from_10_pages())
