@@ -1,5 +1,5 @@
 # Парсер Онлайн библиотеки (жанр фантастики)
-Поможет скачать книги/обложки
+Поможет скачать книги/обложки c tululu.org
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/ac03e2881bf9a8a1e734/maintainability)](https://codeclimate.com/github/Zed-chi/dvmn_frontend_ch3/maintainability)
 
@@ -25,5 +25,7 @@
 * --json_path -> (Значение - Строка), Путь в который сохранится файл описания всех книг.
 
 
+## Цель проекта
 
+Код написан в образовательных целях на онлайн-курсе для веб-разработчиков dvmn.org.
 [ДВМН](https://dvmn.org/)
