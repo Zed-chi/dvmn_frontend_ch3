@@ -49,9 +49,9 @@ def get_book_details(html):
         return None
     try:
         soup = BeautifulSoup(html, "lxml")
-        header = soup.select("#content h1:first-child").text
+        header = soup.select("#content > h1")[0].text
         title, author = map(lambda x: x.strip(), header.split("::"))
-        img = soup.select(".bookimage img:first-child")
+        img = soup.select(".bookimage img")[0]
         if img:
             src = urllib.parse.urljoin(BASE_URL, img.get("src"))
         else:
