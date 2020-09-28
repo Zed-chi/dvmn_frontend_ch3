@@ -1,5 +1,6 @@
 import requests
 import os
+import argparse
 from utils import (
     save_image,
     print_book_details,
@@ -15,12 +16,24 @@ from utils import (
 from parse_tululu_category import (
     get_all_book_links_on_page,
     get_sfiction_list_books_page,
+    get_links_from_pages,
 )
 
 
 BASE_URL = "http://tululu.org"
 BASE_BOOK_PAGE = "http://tululu.org/b"
 BOOK_URL = "http://tululu.org/txt.php?id="
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--start_page", default=1, type=int)
+    parser.add_argument("--end_page", type=int)
+    parser.add_argument("--dest_folder", default="./")
+    parser.add_argument("--skip_imgs", type=bool, default=False)
+    parser.add_argument("--skip_txt", type=bool, default=False)
+    parser.add_argument("--json_path")
+    return parser.parse_args()
 
 
 def download_10_books():
@@ -95,5 +108,41 @@ def download_100_books():
     make_description({"books": description})
 
 
+def main():
+    args = get_args()
+    books_path = os.path.join(args.dest_folder, "books")
+    images_path = os.path.join(args.dest_folder, "images")
+    json_filepath = args.json_path or os.path.join(
+        args.dest_folder, "books.json"
+    )
+    links = get_links_from_pages(args.start_page, args.end_page)
+    description = []
+    for id, link in enumerate(links):
+        html = get_text_from_url(link, allow_redirects=True)
+        info = get_book_details(html)
+        if not args.skip_imgs:
+            if "nopic" in info["img_url"]:
+                name = "nopic"
+            else:
+                name = f"{id}"
+            ext = info["img_url"].split(".")[-1]
+            image_filename = f"{name}.{ext}"
+            info["img_src"] = os.path.normcase(
+                os.path.join(images_path, image_filename)
+            )
+            download_image(from_=info["img_url"], to=info["img_src"])
+        if not args.skip_txt:
+            book_filename = f"{id}.{info['title']}.txt"
+            info["book_path"] = os.path.normcase(
+                os.path.join(books_path, book_filename)
+            )
+            book_id = get_id_from_book_url(link)
+            txt_link = f"{BOOK_URL}{book_id}"
+            download_txt(from_=txt_link, to=info["book_path"])
+        description.append(info)
+
+    make_description({"books": description}, json_filepath)
+
+
 if __name__ == "__main__":
-    download_100_books()
+    main()
