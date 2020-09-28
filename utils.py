@@ -13,7 +13,7 @@ BASE_URL = "http://tululu.org"
 def check_or_make_dir(path):
     dir = os.path.dirname(path)
     if not os.path.exists(dir):
-        os.mkdir(dir)
+        os.makedirs(dir)
 
 
 def get_content_from_url(url, allow_redirects=False):
