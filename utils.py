@@ -49,16 +49,14 @@ def get_book_details(html):
         return None
     try:
         soup = BeautifulSoup(html, "lxml")
-        header = soup.find("div", id="content").find("h1").text
+        header = soup.select("#content h1:first-child").text
         title, author = map(lambda x: x.strip(), header.split("::"))
-        img = soup.find("div", class_="bookimage").find("img")
+        img = soup.select(".bookimage img:first-child")
         if img:
             src = urllib.parse.urljoin(BASE_URL, img.get("src"))
         else:
             src = None
-        comments = list(
-            map(lambda x: x.text, soup.select(".texts span", class_="texts"))
-        )
+        comments = list(map(lambda x: x.text, soup.select(".texts span")))
         genres = list(
             map(lambda x: x.text, soup.select("#content > .d_book > a"))
         )
@@ -78,6 +76,8 @@ def get_book_details(html):
 
 def save_book(path, content):
     check_or_make_dir(path)
+    if os.path.exists(path):
+        return
     with open(path, "w", encoding="utf-8") as file:
         file.write(content)
 
@@ -108,14 +108,15 @@ def print_book_details(details):
 
 def save_image(name, content):
     check_or_make_dir(name)
-    if not os.path.exists(name):
-        with open(name, "wb") as file:
-            file.write(content)
+    if os.path.exists(name):
+        return
+    with open(name, "wb") as file:
+        file.write(content)
 
 
 def download_image(from_="", to=""):
     if not from_ or not to:
-        return None
+        return
     content = get_content_from_url(from_)
     if content:
         save_image(to, content)
