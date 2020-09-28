@@ -30,8 +30,8 @@ def get_args():
     parser.add_argument("--start_page", default=1, type=int)
     parser.add_argument("--end_page", type=int)
     parser.add_argument("--dest_folder", default="./")
-    parser.add_argument("--skip_imgs", type=bool, default=False)
-    parser.add_argument("--skip_txt", type=bool, default=False)
+    parser.add_argument("--skip_imgs", action="store_true", default=False)
+    parser.add_argument("--skip_txt", action="store_true", default=False)
     parser.add_argument("--json_path")
     return parser.parse_args()
 
@@ -51,7 +51,15 @@ def download_txt_from_tululu_by_id(id):
         filename = f"{id}.{info['title']}.txt"
         filepath = get_output_filename(filename)
         save_book(filepath, txt)
-        print(f"{id} done")
+    print(f"{id} done")
+
+
+def get_name_from_url_or_id(url, id):
+    ext = url.split(".")[-1]
+    if "nopic" in url:
+        return f"nopic.{ext}"
+    else:
+        return f"{id}.{ext}"
 
 
 def get_images_from_10_books():
@@ -59,19 +67,13 @@ def get_images_from_10_books():
         book_details_page = f"{BASE_BOOK_PAGE}{id}"
         html = get_text_from_url(book_details_page, allow_redirects=True)
         info = get_book_details(html)
-        if info and info["img_url"] is not None:
-            try:
-                if "nopic" in info["img_url"]:
-                    name = "nopic"
-                else:
-                    name = f"{id}"
-                res = requests.get(info["img_url"])
-                if res.status_code == 200:
-                    print_book_details(info)
-                    ext = info["img_url"].split(".")[-1]
-                    save_image(f"{name}.{ext}", res.content)
-            except Exception as e:
-                print(e)
+        if not info or info["img_url"] is None:
+            return None
+        name = get_name_from_url_or_id(info["img_url"], id)
+        res = requests.get(info["img_url"])
+        if res.status_code == 200:
+            print_book_details(info)
+            save_image(os.path.join("./", name), res.content)
 
 
 def download_100_books():
@@ -121,12 +123,7 @@ def main():
         html = get_text_from_url(link, allow_redirects=True)
         info = get_book_details(html)
         if not args.skip_imgs:
-            if "nopic" in info["img_url"]:
-                name = "nopic"
-            else:
-                name = f"{id}"
-            ext = info["img_url"].split(".")[-1]
-            image_filename = f"{name}.{ext}"
+            image_filename = get_name_from_url_or_id(info["img_url"], id)
             info["img_src"] = os.path.normcase(
                 os.path.join(images_path, image_filename)
             )
