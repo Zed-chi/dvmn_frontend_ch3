@@ -91,7 +91,7 @@ def download_100_books():
             txt_link = f"{BOOK_URL}{book_id}"
             download_image(from_=info["img_url"], to=info["img_src"])
             download_txt(from_=txt_link, to=info["book_path"])
-            description.append(info)        
+            description.append(info)
     make_description({"books": description})
 
 
