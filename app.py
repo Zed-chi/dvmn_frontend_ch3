@@ -1,5 +1,6 @@
 import os
 import argparse
+from urllib.parse import urlunparse, urlencode
 from utils import (
     get_text_from_url,
     get_book_details,
@@ -15,7 +16,7 @@ from parse_tululu_category import (
 
 BASE_URL = "http://tululu.org"
 BASE_BOOK_PAGE = "http://tululu.org/b"
-BASE_TXT_URL = "http://tululu.org/txt.php?id="
+BASE_TXT_URL = "http://tululu.org/txt.php"
 
 
 def get_args():
@@ -65,9 +66,8 @@ def main():
                 details["book_path"] = os.path.normcase(
                     os.path.join(books_dir, book_filename)
                 )
-                txt_id = get_id_from_book_url(link)
-                txt_link = f"{BASE_TXT_URL}{txt_id}"
-                download_txt(from_=txt_link, to=details["book_path"])
+                txt_id = get_id_from_book_url(link)                
+                download_txt(from_=BASE_TXT_URL, to=details["book_path"], urlparams={"id":txt_id})
             description.append(details)
         except Exception as e:
             print(e)

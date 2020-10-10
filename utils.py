@@ -24,8 +24,8 @@ def get_content_from_url(url, allow_redirects=False):
         return None
 
 
-def get_text_from_url(url, allow_redirects=False):
-    res = requests.get(url, allow_redirects=allow_redirects)
+def get_text_from_url(url, urlparams, allow_redirects=False):
+    res = requests.get(url, allow_redirects=allow_redirects, params=urlparams)
     if res.status_code == 200:
         return res.text
     else:
@@ -82,10 +82,10 @@ def save_book(path, content):
         file.write(content)
 
 
-def download_txt(from_="", to=""):
+def download_txt(from_="", to="", urlparams=None):
     name = get_output_filename(os.path.basename(to))
     path = os.path.join(os.path.dirname(to), name)
-    content = get_text_from_url(from_)
+    content = get_text_from_url(from_, urlparams)
     if content:
         save_book(path, content)
 
