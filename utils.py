@@ -19,7 +19,9 @@ def get_content_from_url(url, allow_redirects=False):
 
 
 def get_text_from_url(url, urlparams, allow_redirects=False):
-    response = requests.get(url, allow_redirects=allow_redirects, params=urlparams)
+    response = requests.get(
+        url, allow_redirects=allow_redirects, params=urlparams
+    )
     if response.status_code == 200:
         return response.text
     else:
