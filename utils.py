@@ -10,12 +10,6 @@ from bs4 import BeautifulSoup
 BASE_URL = "http://tululu.org"
 
 
-def check_or_make_dir(path):
-    dir = os.path.dirname(path)
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-
-
 def get_content_from_url(url, allow_redirects=False):
     res = requests.get(url, allow_redirects=allow_redirects)
     if res.status_code == 200:
@@ -75,7 +69,7 @@ def get_book_details(html):
 
 
 def save_book(path, content):
-    check_or_make_dir(path)
+    os.makedirs(path)
     if os.path.exists(path):
         return
     with open(path, "w", encoding="utf-8") as file:
@@ -107,7 +101,7 @@ def print_book_details(details):
 
 
 def save_image(name, content):
-    check_or_make_dir(name)
+    os.makedirs(name)
     if os.path.exists(name):
         return
     with open(name, "wb") as file:
