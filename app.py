@@ -36,25 +36,28 @@ def get_name_from_url(url):
 
 def main():
     args = get_args()
-    ###
+
     books_dir = os.path.join(args.dest_folder, "books")
     images_dir = os.path.join(args.dest_folder, "images")
     json_filepath = args.json_path or os.path.join(
         args.dest_folder, "books.json"
     )
-    ###
+
     links = get_links_from_pages(args.start_page, args.end_page)
     description = []
+
     for id, link in enumerate(links):
         try:
             html = get_text_from_url(link, allow_redirects=True)
             details = get_book_details(html)
+
             if not args.skip_imgs:
                 image_filename = get_name_from_url(details["img_url"])
                 details["img_src"] = os.path.normcase(
                     os.path.join(images_dir, image_filename)
                 )
                 download_image(from_=details["img_url"], to=details["img_src"])
+
             if not args.skip_txt:
                 book_filename = f"{id}.{details['title']}.txt"
                 details["book_path"] = os.path.normcase(
@@ -66,6 +69,7 @@ def main():
                     to=details["book_path"],
                     urlparams={"id": txt_id},
                 )
+
             description.append(details)
         except Exception as e:
             print(e)
