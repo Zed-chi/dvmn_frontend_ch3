@@ -11,17 +11,17 @@ BASE_URL = "http://tululu.org"
 
 
 def get_content_from_url(url, allow_redirects=False):
-    res = requests.get(url, allow_redirects=allow_redirects)
-    if res.status_code == 200:
-        return res.content
+    response = requests.get(url, allow_redirects=allow_redirects)
+    if response.status_code == 200:
+        return response.content
     else:
         return None
 
 
 def get_text_from_url(url, urlparams, allow_redirects=False):
-    res = requests.get(url, allow_redirects=allow_redirects, params=urlparams)
-    if res.status_code == 200:
-        return res.text
+    response = requests.get(url, allow_redirects=allow_redirects, params=urlparams)
+    if response.status_code == 200:
+        return response.text
     else:
         return None
 
@@ -33,9 +33,9 @@ def get_output_filename(filename):
 
 
 def get_id_from_book_url(link):
-    res = re.search(r"b([0-9]+)", link)
-    if res:
-        return res.group(1)
+    result = re.search(r"b([0-9]+)", link)
+    if result:
+        return result.group(1)
 
 
 def get_book_details(html):
@@ -44,15 +44,15 @@ def get_book_details(html):
     try:
         soup = BeautifulSoup(html, "lxml")
         header = soup.select("#content > h1")[0].text
-        title, author = map(lambda x: x.strip(), header.split("::"))
+        title, author = map(lambda text: text.strip(), header.split("::"))
         img = soup.select(".bookimage img")[0]
         if img:
             src = urllib.parse.urljoin(BASE_URL, img.get("src"))
         else:
             src = None
-        comments = list(map(lambda x: x.text, soup.select(".texts span")))
+        comments = list(map(lambda tag: tag.text, soup.select(".texts span")))
         genres = list(
-            map(lambda x: x.text, soup.select("#content > .d_book > a"))
+            map(lambda tag: tag.text, soup.select("#content > .d_book > a"))
         )
 
         return {
