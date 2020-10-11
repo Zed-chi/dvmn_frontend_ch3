@@ -1,5 +1,6 @@
 import os
 import argparse
+
 from urllib.parse import urlunparse, urlencode
 from utils import (
     get_text_from_url,
@@ -12,7 +13,6 @@ from utils import (
 from parse_tululu_category import (
     get_links_from_pages,
 )
-
 
 BASE_URL = "http://tululu.org"
 BASE_BOOK_PAGE = "http://tululu.org/b"
@@ -30,12 +30,8 @@ def get_args():
     return parser.parse_args()
 
 
-def get_name_from_url_or_id(url, id):
-    ext = url.split(".")[-1]
-    if "nopic" in url:
-        return f"nopic.{ext}"
-    else:
-        return f"{id}.{ext}"
+def get_name_from_url(url):
+    return url.split("/")[-1]
 
 
 def main():
@@ -54,9 +50,7 @@ def main():
             html = get_text_from_url(link, allow_redirects=True)
             details = get_book_details(html)
             if not args.skip_imgs:
-                image_filename = get_name_from_url_or_id(
-                    details["img_url"], id
-                )
+                image_filename = get_name_from_url(details["img_url"])
                 details["img_src"] = os.path.normcase(
                     os.path.join(images_dir, image_filename)
                 )
@@ -66,8 +60,12 @@ def main():
                 details["book_path"] = os.path.normcase(
                     os.path.join(books_dir, book_filename)
                 )
-                txt_id = get_id_from_book_url(link)                
-                download_txt(from_=BASE_TXT_URL, to=details["book_path"], urlparams={"id":txt_id})
+                txt_id = get_id_from_book_url(link)
+                download_txt(
+                    from_=BASE_TXT_URL,
+                    to=details["book_path"],
+                    urlparams={"id": txt_id},
+                )
             description.append(details)
         except Exception as e:
             print(e)
