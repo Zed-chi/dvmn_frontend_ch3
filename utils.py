@@ -21,7 +21,7 @@ def get_content_from_url(url, allow_redirects=False):
         return None
 
 
-def get_text_from_url(url, urlparams=None, allow_redirects=False):
+def get_text_from_url(url, urlparams=None, allow_redirects=True):
     response = requests.get(
         url, allow_redirects=allow_redirects, params=urlparams
     )
@@ -39,8 +39,9 @@ def get_output_filename(filename):
 
 def get_id_from_book_url(link):
     result = re.search(r"b([0-9]+)", link)
-    if result:
-        return result.group(1)
+    if not result:
+        return
+    return result.group(1)
 
 
 def get_book_details(html):
