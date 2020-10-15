@@ -12,9 +12,9 @@ from utils import (
     make_description,
 )
 
-BASE_URL = "http://tululu.org"
-BASE_BOOK_PAGE = "http://tululu.org/b"
-BASE_TXT_URL = "http://tululu.org/txt.php"
+BASE_URL = "https://tululu.org"
+BASE_BOOK_PAGE = "https://tululu.org/b"
+BASE_TXT_URL = "https://tululu.org/txt.php"
 
 
 def get_args():
@@ -44,8 +44,10 @@ def main():
     links = get_links_from_pages(args.start_page, args.end_page)
     description = []
     if not links:
-        print("links fault")
+        print("No files to download :(")
         return None
+    else:
+        print(f"Going to download {len(links)} files...")
     for id, link in enumerate(links):
         try:
             html = get_text_from_url(link, allow_redirects=True)
@@ -71,7 +73,7 @@ def main():
                 to=details["book_path"],
                 urlparams={"id": txt_id},
             )
-
+            print(f"{id+1} file '{book_filename}' has been saved")
             description.append(details)
         except Exception as e:
             print(e)
