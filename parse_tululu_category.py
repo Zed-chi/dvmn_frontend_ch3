@@ -31,18 +31,12 @@ def get_sfiction_list_books_page(page_num):
 
 def get_links_from_pages(startpage, endpage=None):
     links = []
-    if endpage:
-        for page_num in range(startpage, endpage):
-            html = get_sfiction_list_books_page(page_num)
-            if not html:
-                continue
-            links.extend(get_all_book_links_on_page(html))
-    else:
-        page_num = startpage
-        while True:
-            html = get_sfiction_list_books_page(page_num)
-            if not html:
-                break
-            links.extend(get_all_book_links_on_page(html)) if html else None
-            page_num += 1
-    return links
+    page_num = startpage
+    while True:
+        if endpage and page_num == endpage:
+            return links
+        html = get_sfiction_list_books_page(page_num)
+        if not html:
+            return links
+        links.extend(get_all_book_links_on_page(html))
+        page_num += 1
