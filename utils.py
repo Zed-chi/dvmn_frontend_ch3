@@ -10,7 +10,7 @@ from pathvalidate import sanitize_filename
 import requests
 
 
-BASE_URL = "http://tululu.org"
+BASE_URL = "https://tululu.org"
 
 
 def get_content_from_url(url, allow_redirects=False):
@@ -21,7 +21,7 @@ def get_content_from_url(url, allow_redirects=False):
         return None
 
 
-def get_text_from_url(url, urlparams=None, allow_redirects=True):
+def get_text_from_url(url, urlparams=None, allow_redirects=False):
     response = requests.get(
         url, allow_redirects=allow_redirects, params=urlparams
     )
@@ -74,11 +74,11 @@ def get_book_details(html):
         print(e)
 
 
-def save_book(path, content):
-    os.makedirs(path)
-    if os.path.exists(path):
+def save_book(filepath, content):
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    if os.path.exists(filepath):
         return
-    with open(path, "w", encoding="utf-8") as file:
+    with open(filepath, "w", encoding="utf-8") as file:
         file.write(content)
 
 
@@ -106,11 +106,11 @@ def print_book_details(details):
     print("==========")
 
 
-def save_image(name, content):
-    os.makedirs(name)
-    if os.path.exists(name):
+def save_image(filepath, content):
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    if os.path.exists(filepath):
         return
-    with open(name, "wb") as file:
+    with open(filepath, "wb") as file:
         file.write(content)
 
 
