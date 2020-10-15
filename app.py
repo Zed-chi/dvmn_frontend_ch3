@@ -1,9 +1,7 @@
 import argparse
 import os
 
-from parse_tululu_category import (
-    get_links_from_pages,
-)
+from parse_tululu_category import get_links_from_pages
 
 from utils import (
     download_image,
@@ -45,7 +43,9 @@ def main():
 
     links = get_links_from_pages(args.start_page, args.end_page)
     description = []
-
+    if not links:
+        print("links fault")
+        return None
     for id, link in enumerate(links):
         try:
             html = get_text_from_url(link, allow_redirects=True)
@@ -60,7 +60,7 @@ def main():
 
             if args.skip_txt:
                 continue
-            
+
             book_filename = f"{id}.{details['title']}.txt"
             details["book_path"] = os.path.normcase(
                 os.path.join(books_dir, book_filename)
