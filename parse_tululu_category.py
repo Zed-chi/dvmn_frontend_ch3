@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 from utils import get_text_from_url
 
-SFICTION_URL = "http://tululu.org/l55/"
+SFICTION_URL = "https://tululu.org/l55/"
 
 
 def get_all_book_links_on_page(html):
