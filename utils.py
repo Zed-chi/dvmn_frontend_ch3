@@ -1,10 +1,13 @@
-import os
-import requests
-import urllib
 import json
+import os
 import re
-from pathvalidate import sanitize_filename
+import urllib
+
 from bs4 import BeautifulSoup
+
+from pathvalidate import sanitize_filename
+
+import requests
 
 
 BASE_URL = "http://tululu.org"
@@ -18,7 +21,7 @@ def get_content_from_url(url, allow_redirects=False):
         return None
 
 
-def get_text_from_url(url, urlparams, allow_redirects=False):
+def get_text_from_url(url, urlparams=None, allow_redirects=False):
     response = requests.get(
         url, allow_redirects=allow_redirects, params=urlparams
     )

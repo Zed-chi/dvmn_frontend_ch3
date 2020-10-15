@@ -1,5 +1,7 @@
-from bs4 import BeautifulSoup
 import urllib
+
+from bs4 import BeautifulSoup
+
 from utils import get_text_from_url
 
 SFICTION_URL = "http://tululu.org/l55/"

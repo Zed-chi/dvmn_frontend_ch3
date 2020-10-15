@@ -1,17 +1,17 @@
-import os
 import argparse
+import os
 
-from urllib.parse import urlunparse, urlencode
-from utils import (
-    get_text_from_url,
-    get_book_details,
-    get_id_from_book_url,
-    download_image,
-    download_txt,
-    make_description,
-)
 from parse_tululu_category import (
     get_links_from_pages,
+)
+
+from utils import (
+    download_image,
+    download_txt,
+    get_book_details,
+    get_id_from_book_url,
+    get_text_from_url,
+    make_description,
 )
 
 BASE_URL = "http://tululu.org"
