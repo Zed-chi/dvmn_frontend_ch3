@@ -75,8 +75,6 @@ def main():
             )
             print(f"{id+1} file '{book_filename}' has been saved")
             description.append(details)
-        except Exception as e:
-            print(e)
         except HTTPError as e:
             print(e)
     make_description({"books": description}, json_filepath)

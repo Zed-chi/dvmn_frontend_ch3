@@ -5,7 +5,7 @@ import urllib
 
 from bs4 import BeautifulSoup
 
-from pathvalidate import sanitize_filename
+from pathvalidate import sanitize_filepath
 
 import requests
 
@@ -16,7 +16,7 @@ BASE_URL = "https://tululu.org"
 def get_content_from_url(url, allow_redirects=False):
     response = requests.get(url, allow_redirects=allow_redirects)
     response.raise_for_status()
-    return response.content    
+    return response.content
 
 
 def get_text_from_url(url, urlparams=None, allow_redirects=False):
@@ -24,13 +24,7 @@ def get_text_from_url(url, urlparams=None, allow_redirects=False):
         url, allow_redirects=allow_redirects, params=urlparams
     )
     response.raise_for_status()
-    return response.text    
-
-
-def get_output_filename(filename):
-    name = sanitize_filename(filename)
-    path = os.path.normpath(name)
-    return path
+    return response.text
 
 
 def get_id_from_book_url(link):
@@ -79,8 +73,7 @@ def save_book(filepath, content):
 
 
 def download_txt(from_="", to="", urlparams=None):
-    name = get_output_filename(os.path.basename(to))
-    path = os.path.join(os.path.dirname(to), name)
+    path = sanitize_filepath(to)
     content = get_text_from_url(from_, urlparams)
     if content:
         save_book(path, content)
@@ -113,9 +106,10 @@ def save_image(filepath, content):
 def download_image(from_="", to=""):
     if not from_ or not to:
         return
+    path = sanitize_filepath(to)
     content = get_content_from_url(from_)
     if content:
-        save_image(to, content)
+        save_image(path, content)
 
 
 def make_description(json_dict, filepath="./books.json"):
