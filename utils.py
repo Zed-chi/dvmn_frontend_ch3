@@ -15,20 +15,16 @@ BASE_URL = "https://tululu.org"
 
 def get_content_from_url(url, allow_redirects=False):
     response = requests.get(url, allow_redirects=allow_redirects)
-    if response.status_code == 200:
-        return response.content
-    else:
-        return None
+    response.raise_for_status()
+    return response.content    
 
 
 def get_text_from_url(url, urlparams=None, allow_redirects=False):
     response = requests.get(
         url, allow_redirects=allow_redirects, params=urlparams
     )
-    if response.status_code == 200:
-        return response.text
-    else:
-        return None
+    response.raise_for_status()
+    return response.text    
 
 
 def get_output_filename(filename):
