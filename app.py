@@ -1,6 +1,7 @@
 import argparse
 import os
 
+from html.parser import HTMLParser
 from parse_tululu_category import get_links_from_pages
 from requests.exceptions import HTTPError
 from utils import (
@@ -78,6 +79,12 @@ def main():
             print(f"{id+1} file '{book_filename}' has been saved")
             description.append(details)
         except HTTPError as e:
+            print(e)
+        except HTMLParser.HTMLParseError as e:
+            print(e)
+        except AttributeError as e:
+            print(e)
+        except TypeError as e:
             print(e)
     make_description({"books": description}, json_filepath)
 

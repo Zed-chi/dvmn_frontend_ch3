@@ -8,20 +8,17 @@ SFICTION_URL = "https://tululu.org/l55/"
 
 
 def get_all_book_links_on_page(html):
-    try:
-        soup = BeautifulSoup(html, "lxml")
-        hrefs = soup.select(
-            "div#content table.d_book tr:first-child td:first-child a"
+    soup = BeautifulSoup(html, "lxml")
+    hrefs = soup.select(
+        "div#content table.d_book tr:first-child td:first-child a"
+    )
+    links = list(
+        map(
+            lambda a: urllib.parse.urljoin(SFICTION_URL, a.get("href")),
+            hrefs,
         )
-        links = list(
-            map(
-                lambda a: urllib.parse.urljoin(SFICTION_URL, a.get("href")),
-                hrefs,
-            )
-        )
-        return links
-    except Exception as e:
-        print(e)
+    )
+    return links
 
 
 def get_sfiction_list_books_page(page_num):

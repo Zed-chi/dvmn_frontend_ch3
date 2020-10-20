@@ -37,29 +37,24 @@ def get_id_from_book_url(link):
 def get_book_details(html):
     if not html:
         return None
-    try:
-        soup = BeautifulSoup(html, "lxml")
-        header = soup.select_one("#content > h1").text
-        title, author = [text.strip() for text in header.split("::")]
-        img = soup.select_one(".bookimage img")
-        if img:
-            src = urllib.parse.urljoin(BASE_URL, img.get("src"))
-        else:
-            src = None
-        comments = [tag.text for tag in soup.select(".texts span")] 
-        genres = [tag.text for tag in soup.select("#content > .d_book > a")]
+    soup = BeautifulSoup(html, "lxml")
+    header = soup.select_one("#content > h1").text
+    title, author = [text.strip() for text in header.split("::")]
+    img = soup.select_one(".bookimage img")
+    if img:
+        src = urllib.parse.urljoin(BASE_URL, img.get("src"))
+    else:
+        src = None
+    comments = [tag.text for tag in soup.select(".texts span")]
+    genres = [tag.text for tag in soup.select("#content > .d_book > a")]
 
-        return {
-            "title": title,
-            "author": author,
-            "img_url": src,
-            "comments": comments,
-            "genres": genres,
-        }
-    except AttributeError as e:
-        print(e)
-    except TypeError as e:
-        print(e)
+    return {
+        "title": title,
+        "author": author,
+        "img_url": src,
+        "comments": comments,
+        "genres": genres,
+    }
 
 
 def save_book(filepath, content):
