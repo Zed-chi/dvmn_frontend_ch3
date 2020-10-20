@@ -68,6 +68,8 @@ def main():
                 os.path.join(books_dir, book_filename)
             )
             txt_id = get_id_from_book_url(link)
+            if not txt_id:
+                continue
             download_txt(
                 from_=BASE_TXT_URL,
                 to=details["book_path"],
