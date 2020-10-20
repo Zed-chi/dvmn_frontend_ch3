@@ -40,16 +40,14 @@ def get_book_details(html):
     try:
         soup = BeautifulSoup(html, "lxml")
         header = soup.select_one("#content > h1").text
-        title, author = map(lambda text: text.strip(), header.split("::"))
+        title, author = [text.strip() for text in header.split("::")]
         img = soup.select_one(".bookimage img")
         if img:
             src = urllib.parse.urljoin(BASE_URL, img.get("src"))
         else:
             src = None
-        comments = list(map(lambda tag: tag.text, soup.select(".texts span")))
-        genres = list(
-            map(lambda tag: tag.text, soup.select("#content > .d_book > a"))
-        )
+        comments = [tag.text for tag in soup.select(".texts span")] 
+        genres = [tag.text for tag in soup.select("#content > .d_book > a")]
 
         return {
             "title": title,
