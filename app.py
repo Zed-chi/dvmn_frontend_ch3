@@ -1,7 +1,8 @@
 import argparse
 import logging
 import os
-from html.parser import HTMLParser
+
+from xml.etree.ElementTree import ParseError
 
 from parse_tululu_category import get_links_from_pages
 
@@ -43,7 +44,8 @@ def main():
     books_dir = os.path.join(args.dest_folder, "books")
     images_dir = os.path.join(args.dest_folder, "images")
     json_filepath = args.json_path or os.path.join(
-        args.dest_folder, "books.json",
+        args.dest_folder,
+        "books.json",
     )
 
     links = get_links_from_pages(args.start_page, args.end_page)
@@ -70,7 +72,6 @@ def main():
 
             if args.skip_txt:
                 continue
-
             book_filename = f"{id}.{details['title']}.txt"
             details["book_path"] = os.path.normcase(
                 os.path.join(books_dir, book_filename),
@@ -83,11 +84,12 @@ def main():
                 to=details["book_path"],
                 urlparams={"id": txt_id},
             )
-            logging.info(f"{id+1} file '{book_filename}' has been saved")
+
+            logging.info(f"File '{book_filename}' has been saved")
             description.append(details)
         except HTTPError as e:
             logging.error(e)
-        except HTMLParser.HTMLParseError as e:
+        except ParseError as e:
             logging.error(e)
         except AttributeError as e:
             logging.error(e)
@@ -104,7 +106,7 @@ def main():
         except AttributeError as e:
             logging.error(e)
     make_description({"books": description}, json_filepath)
-    logging.INFO(f"Files downloaded, description in {json_filepath}")
+    logging.info(f"Files are downloaded, description in {json_filepath}")
 
 
 if __name__ == "__main__":
