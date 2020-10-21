@@ -12,12 +12,7 @@ def get_all_book_links_on_page(html):
     hrefs = soup.select(
         "div#content table.d_book tr:first-child td:first-child a"
     )
-    links = list(
-        map(
-            lambda a: urllib.parse.urljoin(SFICTION_URL, a.get("href")),
-            hrefs,
-        )
-    )
+    links = [urllib.parse.urljoin(SFICTION_URL, a.get("href")) for a in hrefs]
     return links
 
 
