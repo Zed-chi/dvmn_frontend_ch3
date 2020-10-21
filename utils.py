@@ -36,12 +36,12 @@ def get_id_from_book_url(url):
     return result.group(1)
 
 
-def get_book_details(html):
+def get_book_details(html, base_url):
     soup = BeautifulSoup(html, "lxml")
     header = soup.select_one("#content > h1").text
     title, author = [text.strip() for text in header.split("::")]
     img = soup.select_one(".bookimage img")
-    src = urllib.parse.urljoin(BASE_URL, img.get("src"))
+    src = urllib.parse.urljoin(base_url, img.get("src"))
     comments = [tag.text for tag in soup.select(".texts span")]
     genres = [tag.text for tag in soup.select("#content > .d_book > a")]
 

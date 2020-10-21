@@ -60,7 +60,7 @@ def main():
             html = get_text_from_url(link, allow_redirects=True)
             if not html:
                 raise ValueError("Book Page html is empty")
-            details = get_book_details(html)
+            details = get_book_details(html, link)
 
             if not args.skip_imgs:
                 image_filename = get_name_from_url(details["img_url"])
