@@ -27,10 +27,10 @@ def get_text_from_url(url, urlparams=None, allow_redirects=False):
     return response.text
 
 
-def get_id_from_book_url(link):
-    result = re.search(r"b([0-9]+)", link)
+def get_id_from_book_url(url):
+    result = re.search(r"b([0-9]+)", url)
     if not result:
-        raise LookupError("Cant get book id from url")
+        raise LookupError(f"Cant get book id from {url}")
     return result.group(1)
 
 
@@ -55,7 +55,7 @@ def get_book_details(html):
 def save_book(filepath, content):
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     if os.path.exists(filepath):
-        raise FileExistsError("This book already saved")
+        raise FileExistsError(f"Book {filepath} already saved")
     with open(filepath, "w", encoding="utf-8") as file:
         file.write(content)
 
@@ -64,7 +64,7 @@ def download_txt(from_="", to="", urlparams=None):
     path = sanitize_filepath(to)
     content = get_text_from_url(from_, urlparams)
     if not content:
-        raise ValueError("Got empty textfile from book url")
+        raise ValueError(f"Got empty textfile from {from_}")
     save_book(path, content)
 
 
@@ -87,7 +87,7 @@ def print_book_details(details):
 def save_image(filepath, content):
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     if os.path.exists(filepath):
-        raise FileExistsError("This image already saved.")
+        raise FileExistsError(f"Image {filepath} is already saved.")
     with open(filepath, "wb") as file:
         file.write(content)
 
@@ -96,7 +96,7 @@ def download_image(from_=None, to=None):
     path = sanitize_filepath(to)
     content = get_content_from_url(from_)
     if not content:
-        raise ValueError("Got empty file instead of image")
+        raise ValueError(f"Got empty image from {from_}")
     save_image(path, content)
 
 
