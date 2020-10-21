@@ -21,7 +21,9 @@ def get_content_from_url(url, allow_redirects=False):
 
 def get_text_from_url(url, urlparams=None, allow_redirects=False):
     response = requests.get(
-        url, allow_redirects=allow_redirects, params=urlparams,
+        url,
+        allow_redirects=allow_redirects,
+        params=urlparams,
     )
     response.raise_for_status()
     return response.text
