@@ -50,11 +50,13 @@ def main():
 
     links = get_links_from_pages(args.start_page, args.end_page)
     description = []
+
     if not links:
         logging.warning("No files to download :(")
         return None
     else:
         logging.info(f"Going to download {len(links)} files...")
+
     for id, link in enumerate(links):
         try:
             html = get_text_from_url(link, allow_redirects=True)
@@ -87,6 +89,7 @@ def main():
 
             logging.info(f"File '{book_filename}' has been saved")
             description.append(details)
+
         except HTTPError as e:
             logging.error(e)
         except ParseError as e:
@@ -105,6 +108,7 @@ def main():
             logging.error(e)
         except AttributeError as e:
             logging.error(e)
+
     make_description({"books": description}, json_filepath)
     logging.info(f"Files are downloaded, description in {json_filepath}")
 
