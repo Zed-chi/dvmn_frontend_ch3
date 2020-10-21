@@ -30,21 +30,16 @@ def get_text_from_url(url, urlparams=None, allow_redirects=False):
 def get_id_from_book_url(link):
     result = re.search(r"b([0-9]+)", link)
     if not result:
-        return
+        raise LookupError("Cant get book id from url")
     return result.group(1)
 
 
 def get_book_details(html):
-    if not html:
-        return None
     soup = BeautifulSoup(html, "lxml")
     header = soup.select_one("#content > h1").text
     title, author = [text.strip() for text in header.split("::")]
     img = soup.select_one(".bookimage img")
-    if img:
-        src = urllib.parse.urljoin(BASE_URL, img.get("src"))
-    else:
-        src = None
+    src = urllib.parse.urljoin(BASE_URL, img.get("src"))
     comments = [tag.text for tag in soup.select(".texts span")]
     genres = [tag.text for tag in soup.select("#content > .d_book > a")]
 
@@ -60,7 +55,7 @@ def get_book_details(html):
 def save_book(filepath, content):
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     if os.path.exists(filepath):
-        return
+        raise FileExistsError("This book already saved")
     with open(filepath, "w", encoding="utf-8") as file:
         file.write(content)
 
@@ -68,8 +63,9 @@ def save_book(filepath, content):
 def download_txt(from_="", to="", urlparams=None):
     path = sanitize_filepath(to)
     content = get_text_from_url(from_, urlparams)
-    if content:
-        save_book(path, content)
+    if not content:
+        raise ValueError("Got empty textfile from book url")
+    save_book(path, content)
 
 
 def print_book_details(details):
@@ -91,18 +87,17 @@ def print_book_details(details):
 def save_image(filepath, content):
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     if os.path.exists(filepath):
-        return
+        raise FileExistsError("This image already saved.")
     with open(filepath, "wb") as file:
         file.write(content)
 
 
-def download_image(from_="", to=""):
-    if not from_ or not to:
-        return
+def download_image(from_=None, to=None):
     path = sanitize_filepath(to)
     content = get_content_from_url(from_)
-    if content:
-        save_image(path, content)
+    if not content:
+        raise ValueError("Got empty file instead of image")
+    save_image(path, content)
 
 
 def make_description(json_dict, filepath="./books.json"):

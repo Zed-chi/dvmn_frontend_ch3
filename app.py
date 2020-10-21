@@ -52,10 +52,13 @@ def main():
     for id, link in enumerate(links):
         try:
             html = get_text_from_url(link, allow_redirects=True)
+            if not html:
+                raise ValueError("Book Page html is empty")
             details = get_book_details(html)
 
             if not args.skip_imgs:
                 image_filename = get_name_from_url(details["img_url"])
+
                 details["img_src"] = os.path.normcase(
                     os.path.join(images_dir, image_filename)
                 )
@@ -85,6 +88,16 @@ def main():
         except AttributeError as e:
             print(e)
         except TypeError as e:
+            print(e)
+        except ConnectionError as e:
+            print(e)
+        except LookupError as e:
+            print(e)
+        except ValueError as e:
+            print(e)
+        except FileExistsError as e:
+            print(e)
+        except AttributeError as e:
             print(e)
     make_description({"books": description}, json_filepath)
 
