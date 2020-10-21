@@ -1,9 +1,12 @@
 import argparse
+import logging
 import os
-
 from html.parser import HTMLParser
+
 from parse_tululu_category import get_links_from_pages
+
 from requests.exceptions import HTTPError
+
 from utils import (
     download_image,
     download_txt,
@@ -13,6 +16,7 @@ from utils import (
     make_description,
 )
 
+logging.basicConfig(level=logging.INFO)
 BASE_URL = "https://tululu.org"
 BASE_BOOK_PAGE = "https://tululu.org/b"
 BASE_TXT_URL = "https://tululu.org/txt.php"
@@ -39,16 +43,16 @@ def main():
     books_dir = os.path.join(args.dest_folder, "books")
     images_dir = os.path.join(args.dest_folder, "images")
     json_filepath = args.json_path or os.path.join(
-        args.dest_folder, "books.json"
+        args.dest_folder, "books.json",
     )
 
     links = get_links_from_pages(args.start_page, args.end_page)
     description = []
     if not links:
-        print("No files to download :(")
+        logging.warning("No files to download :(")
         return None
     else:
-        print(f"Going to download {len(links)} files...")
+        logging.info(f"Going to download {len(links)} files...")
     for id, link in enumerate(links):
         try:
             html = get_text_from_url(link, allow_redirects=True)
@@ -60,7 +64,7 @@ def main():
                 image_filename = get_name_from_url(details["img_url"])
 
                 details["img_src"] = os.path.normcase(
-                    os.path.join(images_dir, image_filename)
+                    os.path.join(images_dir, image_filename),
                 )
                 download_image(from_=details["img_url"], to=details["img_src"])
 
@@ -69,7 +73,7 @@ def main():
 
             book_filename = f"{id}.{details['title']}.txt"
             details["book_path"] = os.path.normcase(
-                os.path.join(books_dir, book_filename)
+                os.path.join(books_dir, book_filename),
             )
             txt_id = get_id_from_book_url(link)
             if not txt_id:
@@ -79,27 +83,28 @@ def main():
                 to=details["book_path"],
                 urlparams={"id": txt_id},
             )
-            print(f"{id+1} file '{book_filename}' has been saved")
+            logging.info(f"{id+1} file '{book_filename}' has been saved")
             description.append(details)
         except HTTPError as e:
-            print(e)
+            logging.error(e)
         except HTMLParser.HTMLParseError as e:
-            print(e)
+            logging.error(e)
         except AttributeError as e:
-            print(e)
+            logging.error(e)
         except TypeError as e:
-            print(e)
+            logging.error(e)
         except ConnectionError as e:
-            print(e)
+            logging.error(e)
         except LookupError as e:
-            print(e)
+            logging.error(e)
         except ValueError as e:
-            print(e)
+            logging.error(e)
         except FileExistsError as e:
-            print(e)
+            logging.error(e)
         except AttributeError as e:
-            print(e)
+            logging.error(e)
     make_description({"books": description}, json_filepath)
+    logging.INFO(f"Files downloaded, description in {json_filepath}")
 
 
 if __name__ == "__main__":
