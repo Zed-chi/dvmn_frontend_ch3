@@ -6,7 +6,7 @@ from xml.etree.ElementTree import ParseError
 
 from parse_tululu_category import get_links_from_pages
 
-from requests.exceptions import HTTPError
+from requests import HTTPError
 
 from utils import (
     download_image,
@@ -90,23 +90,16 @@ def main():
             logging.info(f"File '{book_filename}' has been saved")
             description.append(details)
 
-        except HTTPError as e:
-            logging.error(e)
-        except ParseError as e:
-            logging.error(e)
-        except AttributeError as e:
-            logging.error(e)
-        except TypeError as e:
-            logging.error(e)
-        except ConnectionError as e:
-            logging.error(e)
-        except LookupError as e:
-            logging.error(e)
-        except ValueError as e:
-            logging.error(e)
-        except FileExistsError as e:
-            logging.error(e)
-        except AttributeError as e:
+        except (
+            HTTPError,
+            ParseError,
+            AttributeError,
+            TypeError,
+            ConnectionError,
+            LookupError,
+            ValueError,
+            FileExistsError,
+        ) as e:
             logging.error(e)
 
     make_description({"books": description}, json_filepath)
