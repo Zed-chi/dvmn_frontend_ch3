@@ -9,6 +9,10 @@ from parse_tululu_category import get_links_from_pages
 from requests import HTTPError
 
 from utils import (
+    EmptyBookError,
+    EmptyHTMLError,
+    EmptyImageError,
+    URLParseError,
     download_image,
     download_txt,
     get_book_details,
@@ -61,7 +65,7 @@ def main():
         try:
             html = get_text_from_url(link, allow_redirects=True)
             if not html:
-                raise ValueError("Book Page html is empty")
+                raise EmptyHTMLError("Book Page html is empty")
             details = get_book_details(html, link)
 
             if not args.skip_imgs:
@@ -97,8 +101,11 @@ def main():
             TypeError,
             ConnectionError,
             LookupError,
-            ValueError,
             FileExistsError,
+            EmptyBookError,
+            EmptyImageError,
+            EmptyHTMLError,
+            URLParseError,
         ) as e:
             logging.error(e)
 

@@ -12,14 +12,37 @@ import requests
 
 BASE_URL = "https://tululu.org"
 
+""" helper errors """
+
+
+class EmptyBookError(ValueError):
+    pass
+
+
+class EmptyImageError(ValueError):
+    pass
+
+
+class EmptyHTMLError(ValueError):
+    pass
+
+
+class URLParseError(ValueError):
+    pass
+
+
+""" helper functions """
+
+
 def check_status_code(response):
     if response.status_code >= 300:
         message = f"Site answered with {response.status_code} code"
         raise requests.HTTPError(message)
     return True
 
+
 def get_content_from_url(url, allow_redirects=False):
-    response = requests.get(url, allow_redirects=allow_redirects)    
+    response = requests.get(url, allow_redirects=allow_redirects)
     check_status_code(response)
     return response.content
 
@@ -37,7 +60,7 @@ def get_text_from_url(url, urlparams=None, allow_redirects=False):
 def get_id_from_book_url(url):
     result = re.search(r"b([0-9]+)", url)
     if not result:
-        raise LookupError(f"Cant get book id from {url}")
+        raise URLParseError(f"Cant get book id from {url}")
     return result.group(1)
 
 
@@ -71,7 +94,7 @@ def download_txt(from_="", to="", urlparams=None):
     path = sanitize_filepath(to)
     content = get_text_from_url(from_, urlparams)
     if not content:
-        raise ValueError(f"Got empty textfile from {from_}")
+        raise EmptyBookError(f"Got empty textfile from {from_}")
     save_book(path, content)
 
 
@@ -103,7 +126,7 @@ def download_image(from_=None, to=None):
     path = sanitize_filepath(to)
     content = get_content_from_url(from_)
     if not content:
-        raise ValueError(f"Got empty image from {from_}")
+        raise EmptyImageError(f"Got empty image from {from_}")
     save_image(path, content)
 
 
