@@ -12,10 +12,15 @@ import requests
 
 BASE_URL = "https://tululu.org"
 
+def check_status_code(response):
+    if response.status_code >= 300:
+        message = f"Site answered with {response.status_code} code"
+        raise requests.HTTPError(message)
+    return True
 
 def get_content_from_url(url, allow_redirects=False):
-    response = requests.get(url, allow_redirects=allow_redirects)
-    response.raise_for_status()
+    response = requests.get(url, allow_redirects=allow_redirects)    
+    check_status_code(response)
     return response.content
 
 
@@ -25,7 +30,7 @@ def get_text_from_url(url, urlparams=None, allow_redirects=False):
         allow_redirects=allow_redirects,
         params=urlparams,
     )
-    response.raise_for_status()
+    check_status_code(response)
     return response.text
 
 
