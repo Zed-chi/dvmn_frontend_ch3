@@ -96,11 +96,8 @@ def main():
 
         except (
             HTTPError,
-            ParseError,
-            AttributeError,
-            TypeError,
+            ParseError,                        
             ConnectionError,
-            LookupError,
             FileExistsError,
             EmptyBookError,
             EmptyImageError,
