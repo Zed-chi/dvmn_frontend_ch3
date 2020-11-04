@@ -10,6 +10,7 @@ from requests import HTTPError
 
 from utils import (
     EmptyBookError,
+    EmptyDetailsError,
     EmptyHTMLError,
     EmptyImageError,
     URLParseError,
@@ -68,15 +69,14 @@ def main():
                 raise EmptyHTMLError("Book Page html is empty")
             details = get_book_details(html, link)
             if not details:
-                raise EmptyHTMLError("Details is empty")
-            print(f"=== details {details}")
+                raise EmptyDetailsError("Details is empty")
 
             if not args.skip_imgs:
                 image_filename = get_name_from_url(details["img_url"])
                 path = os.path.normcase(
                     os.path.abspath(os.path.join(images_dir, image_filename))
                 )
-                print(f"=== {path} ===")
+
                 details["img_src"] = path
                 download_image(from_=details["img_url"], to=details["img_src"])
 
@@ -97,9 +97,8 @@ def main():
             )
 
             logging.info(f"File '{book_filename}' has been saved")
-            print(f"=== details out: {details}")
+
             description.append(details)
-            print(f"=== description out: {description}")
 
         except (
             HTTPError,
@@ -112,7 +111,7 @@ def main():
             URLParseError,
         ) as e:
             logging.error(e)
-    print(description)
+
     make_description({"books": description}, json_filepath)
     logging.info(f"Files are downloaded, description in {json_filepath}")
 

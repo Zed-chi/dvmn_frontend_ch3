@@ -19,6 +19,10 @@ class EmptyBookError(ValueError):
     pass
 
 
+class EmptyDetailsError(ValueError):
+    pass
+
+
 class EmptyImageError(ValueError):
     pass
 
