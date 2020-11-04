@@ -25,10 +25,15 @@ def get_links_from_pages(startpage, endpage=None):
     links = []
     page_num = startpage
     while True:
-        if endpage and page_num == endpage:
-            return links
-        html = get_sfiction_list_books_page(page_num)
-        if not html:
-            return links
-        links.extend(get_all_book_links_on_page(html))
-        page_num += 1
+        try:
+            if endpage and page_num == endpage:
+                return links
+            html = get_sfiction_list_books_page(page_num)
+            if not html:
+                return links
+            links.extend(get_all_book_links_on_page(html))
+            page_num += 1
+        except:
+            print(page_num, "error")
+            break
+    return links

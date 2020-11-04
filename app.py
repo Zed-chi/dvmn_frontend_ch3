@@ -67,21 +67,26 @@ def main():
             if not html:
                 raise EmptyHTMLError("Book Page html is empty")
             details = get_book_details(html, link)
+            if not details:
+                raise EmptyHTMLError("Details is empty")
+            print(f"=== details {details}")
 
             if not args.skip_imgs:
                 image_filename = get_name_from_url(details["img_url"])
-
-                details["img_src"] = os.path.normcase(
-                    os.path.join(images_dir, image_filename),
+                path = os.path.normcase(
+                    os.path.abspath(os.path.join(images_dir, image_filename))
                 )
+                print(f"=== {path} ===")
+                details["img_src"] = path
                 download_image(from_=details["img_url"], to=details["img_src"])
 
             if args.skip_txt:
                 continue
             book_filename = f"{id}.{details['title']}.txt"
-            details["book_path"] = os.path.normcase(
-                os.path.join(books_dir, book_filename),
+            path = os.path.normcase(
+                os.path.abspath(os.path.join(books_dir, book_filename))
             )
+            details["book_path"] = path
             txt_id = get_id_from_book_url(link)
             if not txt_id:
                 continue
@@ -92,11 +97,13 @@ def main():
             )
 
             logging.info(f"File '{book_filename}' has been saved")
+            print(f"=== details out: {details}")
             description.append(details)
+            print(f"=== description out: {description}")
 
         except (
             HTTPError,
-            ParseError,                        
+            ParseError,
             ConnectionError,
             FileExistsError,
             EmptyBookError,
@@ -105,7 +112,7 @@ def main():
             URLParseError,
         ) as e:
             logging.error(e)
-
+    print(description)
     make_description({"books": description}, json_filepath)
     logging.info(f"Files are downloaded, description in {json_filepath}")
 

@@ -42,16 +42,14 @@ def check_status_code(response):
 
 
 def get_content_from_url(url, allow_redirects=False):
-    response = requests.get(url, allow_redirects=allow_redirects)
+    response = requests.get(url, allow_redirects=allow_redirects, verify=False)
     check_status_code(response)
     return response.content
 
 
 def get_text_from_url(url, urlparams=None, allow_redirects=False):
     response = requests.get(
-        url,
-        allow_redirects=allow_redirects,
-        params=urlparams,
+        url, allow_redirects=allow_redirects, params=urlparams, verify=False
     )
     check_status_code(response)
     return response.text
@@ -91,11 +89,14 @@ def save_book(filepath, content):
 
 
 def download_txt(from_="", to="", urlparams=None):
-    path = sanitize_filepath(to)
-    content = get_text_from_url(from_, urlparams)
-    if not content:
-        raise EmptyBookError(f"Got empty textfile from {from_}")
-    save_book(path, content)
+    try:
+        path = sanitize_filepath(to)
+        content = get_text_from_url(from_, urlparams)
+        if not content:
+            raise EmptyBookError(f"Got empty textfile from {from_}")
+        save_book(path, content)
+    except Exception as e:
+        print(e)
 
 
 def print_book_details(details):
@@ -123,11 +124,14 @@ def save_image(filepath, content):
 
 
 def download_image(from_=None, to=None):
-    path = sanitize_filepath(to)
-    content = get_content_from_url(from_)
-    if not content:
-        raise EmptyImageError(f"Got empty image from {from_}")
-    save_image(path, content)
+    try:
+        path = sanitize_filepath(to, platform="auto")
+        content = get_content_from_url(from_)
+        if not content:
+            raise EmptyImageError(f"Got empty image from {from_}")
+        save_image(path, content)
+    except Exception as e:
+        print(e)
 
 
 def make_description(json_dict, filepath="./books.json"):
