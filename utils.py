@@ -94,7 +94,7 @@ def save_book(filepath, content):
 
 def download_txt(from_="", to="", urlparams=None):
     try:
-        path = sanitize_filepath(to)
+        path = sanitize_filepath(to, platform="auto")
         content = get_text_from_url(from_, urlparams)
         if not content:
             raise EmptyBookError(f"Got empty textfile from {from_}")
